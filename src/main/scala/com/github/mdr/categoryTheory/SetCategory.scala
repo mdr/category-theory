@@ -1,5 +1,23 @@
 package com.github.mdr.categoryTheory
 
+import Categories._
+
+object AnySetCategory extends SetCategory[Any](1) with CategoryWithProducts[Set[Any], TypedFn[Any]] {
+
+  def product(o1: Set[Any], o2: Set[Any]) = {
+    val p: Set[Any] = for (x1 ← o1; x2 ← o2) yield (x1, x2)
+    (TypedFn(p, o1) { case (x, y) ⇒ x }, p, TypedFn(p, o2) { case (x, y) ⇒ y })
+  }
+
+  def pair(f: TypedFn[Any], g: TypedFn[Any]): TypedFn[Any] = {
+    require(f.domain == g.domain)
+    val a = f.domain
+    val (π1, p, π2) = product(f.codomain, g.codomain)
+    TypedFn(f.domain, p) { x ⇒ (f(x), g(x)) }
+  }
+
+}
+
 class SetCategory[T](element: T)
     extends Category[Set[T], TypedFn[T]]
     with CategoryWithInitialObject[Set[T], TypedFn[T]]
@@ -51,7 +69,7 @@ class TypedFn[T](val domain: Set[T], val codomain: Set[T])(val f: T ⇒ T) {
 
 }
 
-object CartesianFunctor extends Functor[Set[Int], TypedFn[Int], Set[(Int, Int)], TypedFn[(Int, Int)]] {
+object CartesianFunctorS extends Functor[Set[Int], TypedFn[Int], Set[(Int, Int)], TypedFn[(Int, Int)]] {
 
   def apply(s: Set[Int]): Set[(Int, Int)] = for (x1 ← s; x2 ← s) yield (x1, x2)
 

@@ -1,8 +1,8 @@
 package com.github.mdr.categoryTheory
 
-object Tests extends App {
+import Categories._
 
-  import Categories._
+object Tests {
 
   implicit val category = new SetCategory[Int](1)
   //  implicit val category = new OppositeCategory(new SetCategory[Int])
@@ -19,25 +19,42 @@ object Tests extends App {
   val m3 = category.getMorphismToTerminalObject(s)
 
   val terminalObject2 = Set(42)
-  
+
   val i = category.getMorphismToTerminalObject(terminalObject2)
   println(i)
   val j = TypedFn(category.terminalObject, terminalObject2)(x ⇒ terminalObject2.head)
   println(j)
-  
+
   val iso1 = i ∘ j
   println(iso1, category.terminalObject.id)
   val iso2 = j ∘ i
   println(iso2, terminalObject2.id)
-  
+
   val f2 = f ∘ f
   val f3 = f ∘ f ∘ f
 
 }
 
+object Test2 extends App {
 
-object Test2 {
+  implicit val category = AnySetCategory
 
-  implicit val category = new SetCategory[Int](1)
+  val s: Set[Any] = Set(1, 2, 3)
+  val (π1, p, π2) = s × s
+  println(s)
+  println(p)
+  val d: Set[Any] = Set(1, 2, 3, 4, 5)
+  val f = TypedFn(d, s) { case x: Int ⇒ ((x + 1) % 3) + 1 }
+  val g = TypedFn(d, s) { case x: Int ⇒ ((x * 2) % 3) + 1 }
+  val pair = category.pair(f, g)
+  println(f)
+  println(g)
+  println(pair)
+  
+  println(π1 ∘ pair)
+  println(f)
+  
+  println(π2 ∘ pair)
+  println(g)
   
 }

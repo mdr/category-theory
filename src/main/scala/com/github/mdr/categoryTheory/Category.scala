@@ -27,6 +27,8 @@ object Categories {
 
     def id[A](implicit category: Category[O, A]): A = identity
 
+    def ×[A](o2: O)(implicit category: CategoryWithProducts[O, A]): (A, O, A)= category.product(o, o2)
+    
   }
 
 }
@@ -57,6 +59,18 @@ trait CategoryWithTerminalObject[O, A] extends Category[O, A] {
   
   def getMorphismToTerminalObject(o: O): A
 
+}
+
+trait CategoryWithProducts[O, A] extends Category[O, A] {
+
+  def product(o1: O, o2: O): (A, O, A)
+
+  /**
+   * dom(f) == dom(g)
+   * @return an arrow from dom(f) to cod(f) × cod(g)
+   */
+  def pair(f: A, g: A): A 
+  
 }
 
 
