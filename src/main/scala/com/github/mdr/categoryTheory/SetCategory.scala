@@ -69,7 +69,7 @@ class TypedFn[T](val domain: Set[T], val codomain: Set[T])(val f: T ⇒ T) {
 
 }
 
-object CartesianFunctorS extends Functor[Set[Int], TypedFn[Int], Set[(Int, Int)], TypedFn[(Int, Int)]] {
+object CartesianFunctor extends Functor[Set[Int], TypedFn[Int], Set[(Int, Int)], TypedFn[(Int, Int)]] {
 
   def apply(s: Set[Int]): Set[(Int, Int)] = for (x1 ← s; x2 ← s) yield (x1, x2)
 

@@ -74,18 +74,6 @@ trait CategoryWithProducts[O, A] extends Category[O, A] {
 }
 
 
-class OppositeCategory[O, A](cat: Category[O, A]) extends Category[O, A] {
-
-  def compose(a1: A, a2: A): A = cat.compose(a2, a1)
-
-  def identity(o: O): A = cat.identity(o)
-
-  def source(a: A): O = cat.target(a)
-
-  def target(a: A): O = cat.source(a)
-
-}
-
 trait Functor[O1, A1, O2, A2] {
 
   def apply(o1: O1): O2
