@@ -3,7 +3,7 @@ package com.github.mdr.categoryTheory
 object Categories {
 
   def cod[O, A](a: A)(implicit category: Category[O, A]) = a.cod
-  
+
   def dom[O, A](a: A)(implicit category: Category[O, A]) = a.dom
 
   implicit def arrow2RichArrow[A](a: A): RichArrow[A] = new RichArrow[A](a)
@@ -28,9 +28,10 @@ object Categories {
 
     def id[A](implicit category: Category[O, A]): A = identity
 
-    def ×[A](o2: O)(implicit category: CategoryWithProducts[O, A]): (A, O, A)= category.product(o, o2)
-    
-  }
+    def ×[A](o2: O)(implicit category: CategoryWithProducts[O, A]): Product[O, A] = category.product(o, o2)
 
+    def ⊕[A](o2: O)(implicit category: CategoryWithCoproducts[O, A]): Coproduct[O, A] = category.coproduct(o, o2)
+
+  }
 
 }

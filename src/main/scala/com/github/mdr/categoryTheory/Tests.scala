@@ -41,13 +41,13 @@ object Test2 {
 
     val s: FinSet[Int] = FinSet(1, 2, 3)
 
-    val (π1, p, π2) = (s: FinSet[Any]) × s
+    val Product(π1, p, π2) = (s: FinSet[Any]) × s
     println(s)
     println(p)
     val d = FinSet(1, 2, 3, 4, 5)
     val f = TypedFn(d, s) { x ⇒ ((x + 1) % 3) + 1 }
     val g = TypedFn(d, s) { x ⇒ ((x * 2) % 3) + 1 }
-    val pair = category.pair(f, g)
+    val pair = category.getMediatingMorphismForProduct(f, g)
   }
 
   {
@@ -66,13 +66,13 @@ object Test3 {
 
   implicit val category = AnySetCategory
   val s: FinSet[Any] = FinSet(1, 2, 3)
-  val (π1, p, π2) = s × s
+  val Product(π1, p, π2) = s × s
 
   val terminalObject = category.terminalObject
   val select1 = TypedFn(terminalObject, s) { x ⇒ 1 }
   val select2 = TypedFn(terminalObject, s) { x ⇒ 2 }
 
-  val pair = category.pair(select1, select2)
+  val pair = category.getMediatingMorphismForProduct(select1, select2)
   println(pair)
 
 }

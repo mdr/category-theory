@@ -15,7 +15,7 @@ trait Category[O, A] {
 trait CategoryWithInitialObject[O, A] extends Category[O, A] {
 
   def initialObject: O
-  
+
   def getMorphismFromInitialObject(o: O): A
 
 }
@@ -23,23 +23,38 @@ trait CategoryWithInitialObject[O, A] extends Category[O, A] {
 trait CategoryWithTerminalObject[O, A] extends Category[O, A] {
 
   def terminalObject: O
-  
+
   def getMorphismToTerminalObject(o: O): A
 
 }
 
+case class Product[O, A](π1: A, p: O, π2: A)
+
 trait CategoryWithProducts[O, A] extends Category[O, A] {
 
-  def product(o1: O, o2: O): (A, O, A)
+  def product(o1: O, o2: O): Product[O, A]
 
   /**
-   * dom(f) == dom(g)
+   * requires dom(f) == dom(g)
    * @return an arrow from dom(f) to cod(f) × cod(g)
    */
-  def pair(f: A, g: A): A 
-  
+  def getMediatingMorphismForProduct(f: A, g: A): A
+
 }
 
+case class Coproduct[O, A](π1: A, p: O, π2: A)
+
+trait CategoryWithCoproducts[O, A] extends Category[O, A] {
+
+  def coproduct(o1: O, o2: O): Coproduct[O, A]
+
+  /**
+   * requires cod(f) == cod(g)
+   * @return an arrow from dom(f) + dom(g) to cod(f)
+   */
+  def getMediatingMorphismForCoproduct(f: A, g: A): A
+
+}
 
 trait Functor[O1, A1, O2, A2] {
 

@@ -1,23 +1,50 @@
 package com.github.mdr.categoryTheory
 
-import Categories._
+import com.github.mdr.categoryTheory.Categories._
 import scala.collection.IterableLike
-import scala.collection.mutable.ArrayBuffer
-import scala.collection.mutable.Builder
 import scala.collection.generic.CanBuildFrom
+import scala.collection.mutable.Builder
+import scala.collection.mutable.ArrayBuffer
 
-object AnySetCategory extends SetCategory[Any](1) with CategoryWithProducts[FinSet[Any], TypedFn[Any]] {
+object AnySetCategory
+    extends SetCategory[Any](1)
+    with CategoryWithProducts[FinSet[Any], TypedFn[Any]]
+    with CategoryWithCoproducts[FinSet[Any], TypedFn[Any]] {
 
-  def product(o1: FinSet[Any], o2: FinSet[Any]) = {
+  private implicit val cat = this
+
+  def product(o1: FinSet[Any], o2: FinSet[Any]): Product[FinSet[Any], TypedFn[Any]] = {
     val p = for (x1 ← o1; x2 ← o2) yield (x1, x2)
-    (TypedFn(p, o1) { case (x, y) ⇒ x }, p, TypedFn(p, o2) { case (x, y) ⇒ y })
+    Product(TypedFn(p, o1) { case (x, y) ⇒ x }, p, TypedFn(p, o2) { case (x, y) ⇒ y })
   }
 
-  def pair(f: TypedFn[Any], g: TypedFn[Any]): TypedFn[Any] = {
+  def getMediatingMorphismForProduct(f: TypedFn[Any], g: TypedFn[Any]): TypedFn[Any] = {
     require(f.domain == g.domain)
     val a = f.domain
-    val (π1, p, π2) = product(f.codomain, g.codomain)
-    TypedFn(f.domain, p) { x ⇒ (f(x), g(x)) }
+    val Product(π1, p, π2) = cod(f) × cod(g)
+    val u = TypedFn(f.domain, p) { x ⇒ (f(x), g(x)) }
+    require(π1 ∘ u == f)
+    require(π2 ∘ u == g)
+    u
+  }
+
+  def coproduct(o1: FinSet[Any], o2: FinSet[Any]): Coproduct[FinSet[Any], TypedFn[Any]] = {
+    val (mkLeft, mkRight) = ((x: Any) ⇒ Left(x), (x: Any) ⇒ Right(x))
+    val c = o1.map(mkLeft) ++ o2.map(mkRight)
+    Coproduct(TypedFn(o1, c)(mkLeft), c, TypedFn(o2, c)(mkRight))
+  }
+
+  def getMediatingMorphismForCoproduct(f: TypedFn[Any], g: TypedFn[Any]): TypedFn[Any] = {
+    require(f.codomain == g.codomain)
+    val a = f.codomain
+    val Coproduct(i1, c, i2) = dom(f) ⊕ dom(g)
+    val u = TypedFn(c, a) {
+      case Left(x)  ⇒ f(x)
+      case Right(x) ⇒ g(x)
+    }
+    require(u ∘ i1 == f)
+    require(u ∘ i2 == g)
+    u
   }
 
 }
