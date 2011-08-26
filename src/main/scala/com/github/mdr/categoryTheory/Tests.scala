@@ -8,7 +8,7 @@ object Tests {
 
   val s = FinSet(1, 2, 3)
 
-  val f = new TypedFn(s, s)(_ match {
+  val f = TypedFn(s, s)(_ match {
     case 1 ⇒ 2
     case 2 ⇒ 3
     case 3 ⇒ 1
@@ -40,6 +40,7 @@ object Test2 {
     implicit val category = AnySetCategory
 
     val s: FinSet[Any] = FinSet(1, 2, 3)
+    
     val (π1, p, π2) = s × s
     println(s)
     println(p)
@@ -65,6 +66,7 @@ object Test3 extends App {
 
   implicit val category = AnySetCategory
   val s: FinSet[Any] = FinSet(1, 2, 3)
+  val (π1, p, π2) = s × s
 
   val terminalObject = category.terminalObject
   val select1 = TypedFn(terminalObject, s) { x ⇒ 1 }
@@ -72,6 +74,5 @@ object Test3 extends App {
 
   val pair = category.pair(select1, select2)
   println(pair)
-  val (π1, p, π2) = s × s
 
 }

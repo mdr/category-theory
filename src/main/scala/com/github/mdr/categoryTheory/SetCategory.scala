@@ -29,7 +29,7 @@ class SetCategory[T](element: T)
 
   def compose(a1: TypedFn[T], a2: TypedFn[T]) =
     if (a1.domain == a2.codomain)
-      TypedFn(a2.domain, a1.codomain)(a1.f compose a2.f)
+      TypedFn(a2.domain, a1.codomain)(a1.map compose a2.map)
     else
       throw new IllegalArgumentException("Cannot compose " + a1 + " with " + a2 + ": incompatible types")
 
@@ -62,7 +62,7 @@ object FinSet {
     }
 
   implicit def set2FinSet[T](set: Set[T]): FinSet[T] = new FinSet(set)
-  
+
   def newBuilder[T]: Builder[T, FinSet[T]] = new ArrayBuffer[T] mapResult { x ⇒ new FinSet[T](x.toSet) }
 
 }
@@ -70,7 +70,7 @@ object FinSet {
 class FinSet[+T] private (set: Set[_]) extends Iterable[T] with IterableLike[T, FinSet[T]] {
 
   private def getSet = set
-  
+
   override def toString = getClass.getSimpleName + "(" + set.mkString(", ") + ")"
 
   def iterator: Iterator[T] = set.iterator.asInstanceOf[Iterator[T]]
@@ -87,25 +87,29 @@ object X {
 
 object TypedFn {
 
-  def apply[T](domain: FinSet[T], codomain: FinSet[T])(f: T ⇒ T) = new TypedFn(domain, codomain)(f)
+  def apply[T](domain: FinSet[T], codomain: FinSet[T])(f: T ⇒ T) = new TypedFn(domain, codomain, domain.map(d ⇒ (d, f(d))).toMap)
 
 }
 
-class TypedFn[T](val domain: FinSet[T], val codomain: FinSet[T])(val f: T ⇒ T) {
+class TypedFn[+T](val domain: FinSet[T], val codomain: FinSet[T], val map: Map[Any, T]) {
 
-  def apply(t: T): T = f(t)
+  def apply(t: Any): T =
+    if (FinSet.underlying(domain) contains t.asInstanceOf[T])
+      map.apply(t.asInstanceOf[T])
+    else
+      throw new IllegalArgumentException(t + " is not in the domain " + domain)
 
   override def equals(other: Any) = other match {
     case otherFn: TypedFn[T] ⇒ equal(otherFn)
     case _                   ⇒ false
   }
 
-  private def equal(otherFn: TypedFn[T]) =
+  private def equal(otherFn: TypedFn[_]) =
     domain == otherFn.domain && codomain == otherFn.codomain && domain.forall(t ⇒ this(t) == otherFn(t))
 
   override lazy val hashCode = domain.## + codomain.##
 
-  override lazy val toString = "TypedFn(" + domain + " => " + codomain + ": " + domain.map(d ⇒ d + " -> " + f(d)).mkString(", ")
+  override lazy val toString = "TypedFn(" + domain + " => " + codomain + ": " + domain.map(d ⇒ d + " -> " + map(d)).mkString(", ")
 
 }
 
