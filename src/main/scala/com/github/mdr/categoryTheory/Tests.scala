@@ -39,14 +39,14 @@ object Test2 {
   {
     implicit val category = AnySetCategory
 
-    val s: FinSet[Any] = FinSet(1, 2, 3)
-    
-    val (π1, p, π2) = s × s
+    val s: FinSet[Int] = FinSet(1, 2, 3)
+
+    val (π1, p, π2) = (s: FinSet[Any]) × s
     println(s)
     println(p)
-    val d: FinSet[Any] = FinSet(1, 2, 3, 4, 5)
-    val f = TypedFn(d, s) { case x: Int ⇒ ((x + 1) % 3) + 1 }
-    val g = TypedFn(d, s) { case x: Int ⇒ ((x * 2) % 3) + 1 }
+    val d = FinSet(1, 2, 3, 4, 5)
+    val f = TypedFn(d, s) { x ⇒ ((x + 1) % 3) + 1 }
+    val g = TypedFn(d, s) { x ⇒ ((x * 2) % 3) + 1 }
     val pair = category.pair(f, g)
   }
 
@@ -62,7 +62,7 @@ object Test2 {
 
 }
 
-object Test3 extends App {
+object Test3 {
 
   implicit val category = AnySetCategory
   val s: FinSet[Any] = FinSet(1, 2, 3)

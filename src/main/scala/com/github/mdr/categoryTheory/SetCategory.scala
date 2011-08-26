@@ -27,11 +27,14 @@ class SetCategory[T](element: T)
     with CategoryWithInitialObject[FinSet[T], TypedFn[T]]
     with CategoryWithTerminalObject[FinSet[T], TypedFn[T]] {
 
+  /**
+   * Do a2, then a1.
+   */
   def compose(a1: TypedFn[T], a2: TypedFn[T]) =
     if (a1.domain == a2.codomain)
       TypedFn(a2.domain, a1.codomain)(a1.map compose a2.map)
     else
-      throw new IllegalArgumentException("Cannot compose " + a1 + " with " + a2 + ": incompatible types")
+      throw new IllegalArgumentException("Cannot compose " + a1 + " with " + a2 + ": incompatible types: " + a1.domain + " != " + a2.codomain)
 
   def identity(o: FinSet[T]) = TypedFn(o, o)(Predef.identity)
 
@@ -71,17 +74,18 @@ class FinSet[+T] private (set: Set[_]) extends Iterable[T] with IterableLike[T, 
 
   private def getSet = set
 
-  override def toString = getClass.getSimpleName + "(" + set.mkString(", ") + ")"
-
   def iterator: Iterator[T] = set.iterator.asInstanceOf[Iterator[T]]
 
   override protected[this] def newBuilder = FinSet.newBuilder
 
-}
+  override def equals(other: Any) = other match {
+    case otherSet: FinSet[T] ⇒ otherSet.getSet == set
+    case _                   ⇒ false
+  }
 
-object X {
-  val s: FinSet[Int] = null
-  val t = s.take(5).map(_ * 2)
+  override lazy val hashCode = set.##
+
+  override def toString = getClass.getSimpleName + "(" + set.mkString(", ") + ")"
 
 }
 
@@ -109,7 +113,7 @@ class TypedFn[+T](val domain: FinSet[T], val codomain: FinSet[T], val map: Map[A
 
   override lazy val hashCode = domain.## + codomain.##
 
-  override lazy val toString = "TypedFn(" + domain + " => " + codomain + ": " + domain.map(d ⇒ d + " -> " + map(d)).mkString(", ")
+  override lazy val toString = getClass.getSimpleName + "(" + domain + " => " + codomain + ": " + domain.map(d ⇒ d + " -> " + map(d)).mkString(", ")
 
 }
 
