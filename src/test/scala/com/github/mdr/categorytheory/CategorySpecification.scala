@@ -11,14 +11,13 @@ object CategorySpecification extends Properties("Category") {
 
   implicit val category = AnySetCategory
 
-  implicit val typedFunGen = for {
-    dom ← arbitrary[Set[Int]]
-    cod ← arbitrary[Set[Int]]
-  } yield TypedFn[Any](dom.asInstanceOf[Set[Any]], cod.asInstanceOf[Set[Any]]) { Predef.identity }
-
-  property("right identity") = forAll(typedFunGen)((f: TypedFn[Any]) ⇒ f ∘ dom(f).id == f)
-  property("left identity") = forAll(typedFunGen)((f: TypedFn[Any]) ⇒ cod(f).id ∘ f == f)
-
+//  implicit val typedFunGen = for {
+//    dom ← arbitrary[FinSet[Int]]
+//    cod ← arbitrary[FinSet[Int]]
+//  } yield TypedFn[Any](dom, asInstanceOf) { Predef.identity }
+//
+//  property("right identity") = forAll(typedFunGen)((f: TypedFn[Any]) ⇒ f ∘ dom(f).id == f)
+//  property("left identity") = forAll(typedFunGen)((f: TypedFn[Any]) ⇒ cod(f).id ∘ f == f)
   property("startsWith") = forAll((a: String, b: String) ⇒ (a + b).startsWith(a))
   //
   //  property("endsWith") = Prop.forAll((a: String, b: String) ⇒ (a + b).endsWith(b))
