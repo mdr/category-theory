@@ -84,7 +84,7 @@ class SetCategory[T](element: T)
     TypedFn(a, dom(f))(Predef.identity)
   }
 
-  def getMorphismToEqualizer(e: TypedFn[T], equaliser: TypedFn[T]): TypedFn[T] =
+  def getMediatingMorphismForEqualizer(e: TypedFn[T], equaliser: TypedFn[T]): TypedFn[T] =
     TypedFn(dom(e), dom(equaliser))(e.map)
 
 }

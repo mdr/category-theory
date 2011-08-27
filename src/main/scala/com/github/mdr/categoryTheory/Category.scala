@@ -66,7 +66,18 @@ trait CategoryWithEqualizers[O, A] extends Category[O, A] {
    */
   def equalizer(f: A, g: A): A
 
-  def getMorphismToEqualizer(e: A, equaliser: A): A
+  def getMediatingMorphismForEqualizer(e: A, equaliser: A): A
+
+}
+
+trait CategoryWithCoequalizers[O, A] extends Category[O, A] {
+
+  /**
+   * requires dom(f) == dom(g) and cod(f) == cod(g)
+   */
+  def coequalizer(f: A, g: A): A
+
+  def getMediatingMorphismForCoequalizer(e: A, coequaliser: A): A
 
 }
 

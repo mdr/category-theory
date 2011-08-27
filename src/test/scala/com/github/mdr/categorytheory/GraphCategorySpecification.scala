@@ -88,8 +88,8 @@ object GraphCategoryGenerators {
     for {
       dom ← arbitrary[Object]
       cod ← arbitrary[Object]
-      fn ← arbitraryMorphism(dom, cod)
-    } yield fn
+      f ← arbitraryMorphism(dom, cod)
+    } yield f
   }
     
   case class ThreeComposableMorphisms(f: Morphism, g: Morphism, h: Morphism) {
@@ -130,4 +130,5 @@ object GraphCategoryGenerators {
     f ← arbitraryMorphism(o1, o2)
     g ← arbitraryMorphism(o1, o2)
   } yield (f, g)
+  
 }
