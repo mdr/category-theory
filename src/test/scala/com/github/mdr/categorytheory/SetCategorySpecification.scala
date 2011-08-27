@@ -49,6 +49,13 @@ object SetCategorySpecification extends Properties("Category of finite sets") {
       val u = category.getMediatingMorphismForCoproduct(f, g)
       u ∘ i1 == f && u ∘ i2 == g
   }
+
+  property("equalizers") = forAll(equalizerTestCases) {
+    case (f: Morphism, g: Morphism) ⇒
+      val e = category.equalizer(f, g)
+      f ∘ e == g ∘ e
+  }
+
 }
 
 object SetCategoryGenerators {
@@ -58,52 +65,58 @@ object SetCategoryGenerators {
 
   private implicit val category = AnySetCategory
 
-  implicit val arbitraryAnyFinSet: Arbitrary[FinSet[Any]] = Arbitrary(arbitrary[Set[Int]].map(x ⇒ x: FinSet[Int]))
+  implicit val arbitraryObject: Arbitrary[Object] = Arbitrary(arbitrary[Set[Int]].map(x ⇒ x: FinSet[Int]))
 
-  case class ThreeComposableMorphisms(f: TypedFn[Any], g: TypedFn[Any], h: TypedFn[Any]) {
-    require { cod(h) == dom(g) && cod(g) == dom(f) }
-  }
-
-  implicit val arbitraryThreeComposableMorphisms: Arbitrary[ThreeComposableMorphisms] = Arbitrary {
-    for {
-      a ← arbitrary[FinSet[Any]]
-      b ← arbitrary[FinSet[Any]]
-      c ← arbitrary[FinSet[Any]]
-      d ← arbitrary[FinSet[Any]]
-      f ← arbitraryTypedFn(c, d)
-      g ← arbitraryTypedFn(b, c)
-      h ← arbitraryTypedFn(a, b)
-    } yield ThreeComposableMorphisms(f, g, h)
-  }
-
-  def arbitraryTypedFn(dom: FinSet[Any], cod: FinSet[Any]): Gen[TypedFn[Any]] =
+  def arbitraryMorphism(dom: Object, cod: Object): Gen[Morphism] =
     for {
       rangeValues ← Gen.listOfN(dom.size, Gen.oneOf(cod.toList))
       fun = dom.toList zip rangeValues toMap
     } yield TypedFn[Any](dom, cod)(fun)
 
-  implicit def typedFunGen: Arbitrary[TypedFn[Any]] = Arbitrary {
+  implicit def arbitraryMorphism: Arbitrary[Morphism] = Arbitrary {
     for {
-      dom ← arbitrary[FinSet[Any]]
-      cod ← arbitrary[FinSet[Any]]
-      fn ← arbitraryTypedFn(dom, cod)
+      dom ← arbitrary[Object]
+      cod ← arbitrary[Object]
+      fn ← arbitraryMorphism(dom, cod)
     } yield fn
+  }
+
+  case class ThreeComposableMorphisms(f: Morphism, g: Morphism, h: Morphism) {
+    require { cod(h) == dom(g) && cod(g) == dom(f) }
+  }
+
+  implicit val arbitraryThreeComposableMorphisms: Arbitrary[ThreeComposableMorphisms] = Arbitrary {
+    for {
+      a ← arbitrary[Object]
+      b ← arbitrary[Object]
+      c ← arbitrary[Object]
+      d ← arbitrary[Object]
+      f ← arbitraryMorphism(c, d)
+      g ← arbitraryMorphism(b, c)
+      h ← arbitraryMorphism(a, b)
+    } yield ThreeComposableMorphisms(f, g, h)
   }
 
   val productTestCases = for {
     o1 ← arbitrary[Object]
     o2 ← arbitrary[Object]
     o3 ← arbitrary[Object]
-    f ← arbitraryTypedFn(o1, o2)
-    g ← arbitraryTypedFn(o1, o3)
+    f ← arbitraryMorphism(o1, o2)
+    g ← arbitraryMorphism(o1, o3)
   } yield (f, g)
 
   val coproductTestCases = for {
     o1 ← arbitrary[Object]
     o2 ← arbitrary[Object]
     o3 ← arbitrary[Object]
-    f ← arbitraryTypedFn(o2, o1)
-    g ← arbitraryTypedFn(o3, o1)
+    f ← arbitraryMorphism(o2, o1)
+    g ← arbitraryMorphism(o3, o1)
   } yield (f, g)
 
+  val equalizerTestCases = for {
+    o1 ← arbitrary[Object]
+    o2 ← arbitrary[Object]
+    f ← arbitraryMorphism(o1, o2)
+    g ← arbitraryMorphism(o1, o2)
+  } yield (f, g)
 }

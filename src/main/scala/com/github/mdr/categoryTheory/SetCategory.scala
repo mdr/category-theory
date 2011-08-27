@@ -5,6 +5,7 @@ import scala.collection.IterableLike
 import scala.collection.generic.CanBuildFrom
 import scala.collection.mutable.Builder
 import scala.collection.mutable.ArrayBuffer
+import scala.PartialFunction.cond
 
 object AnySetCategory
     extends SetCategory[Any](1)
@@ -52,11 +53,11 @@ object AnySetCategory
 class SetCategory[T](element: T)
     extends Category[FinSet[T], TypedFn[T]]
     with CategoryWithInitialObject[FinSet[T], TypedFn[T]]
-    with CategoryWithTerminalObject[FinSet[T], TypedFn[T]] {
+    with CategoryWithTerminalObject[FinSet[T], TypedFn[T]]
+    with CategoryWithEqualizers[FinSet[T], TypedFn[T]] {
 
-  /**
-   * Do a2, then a1.
-   */
+  private implicit val cat = this
+
   def compose(a1: TypedFn[T], a2: TypedFn[T]) =
     if (a1.domain == a2.codomain)
       TypedFn(a2.domain, a1.codomain)(a1.map compose a2.map)
@@ -76,6 +77,15 @@ class SetCategory[T](element: T)
   def terminalObject = FinSet(element)
 
   def getMorphismToTerminalObject(o: FinSet[T]): TypedFn[T] = TypedFn(o, terminalObject)(x ⇒ element)
+
+  def equalizer(f: TypedFn[T], g: TypedFn[T]): TypedFn[T] = {
+    require { dom(f) == dom(g) && cod(f) == cod(g) }
+    val a = for (x ← dom(f) if f(x) == g(x)) yield x
+    TypedFn(a, dom(f))(Predef.identity)
+  }
+
+  def getMorphismToEqualizer(e: TypedFn[T], equaliser: TypedFn[T]): TypedFn[T] =
+    TypedFn(dom(e), dom(equaliser))(e.map)
 
 }
 
@@ -105,9 +115,8 @@ class FinSet[+T] private (set: Set[_]) extends Iterable[T] with IterableLike[T, 
 
   override protected[this] def newBuilder = FinSet.newBuilder
 
-  override def equals(other: Any) = other match {
+  override def equals(other: Any) = cond(other) {
     case otherSet: FinSet[T] ⇒ otherSet.getSet == set
-    case _                   ⇒ false
   }
 
   override lazy val hashCode = set.##
@@ -130,13 +139,9 @@ class TypedFn[+T](val domain: FinSet[T], val codomain: FinSet[T], val map: Map[A
     else
       throw new IllegalArgumentException(t + " is not in the domain " + domain)
 
-  override def equals(other: Any) = other match {
-    case otherFn: TypedFn[T] ⇒ equal(otherFn)
-    case _                   ⇒ false
+  override def equals(other: Any) = cond(other) {
+    case otherFn: TypedFn[T] ⇒ domain == otherFn.domain && codomain == otherFn.codomain && domain.forall(t ⇒ this(t) == otherFn(t))
   }
-
-  private def equal(otherFn: TypedFn[_]) =
-    domain == otherFn.domain && codomain == otherFn.codomain && domain.forall(t ⇒ this(t) == otherFn(t))
 
   override lazy val hashCode = domain.## + codomain.##
 

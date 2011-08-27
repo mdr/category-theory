@@ -2,6 +2,9 @@ package com.github.mdr.categoryTheory
 
 trait Category[O, A] {
 
+  /**
+   * Do a2, then a1.
+   */
   def compose(a1: A, a2: A): A
 
   def identity(o: O): A
@@ -53,6 +56,17 @@ trait CategoryWithCoproducts[O, A] extends Category[O, A] {
    * @return an arrow from dom(f) + dom(g) to cod(f)
    */
   def getMediatingMorphismForCoproduct(f: A, g: A): A
+
+}
+
+trait CategoryWithEqualizers[O, A] extends Category[O, A] {
+
+  /**
+   * requires dom(f) == dom(g) and cod(f) == cod(g)
+   */
+  def equalizer(f: A, g: A): A
+
+  def getMorphismToEqualizer(e: A, equaliser: A): A
 
 }
 
