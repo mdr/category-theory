@@ -1,9 +1,13 @@
-name := "My Project"
+name := "category-theory"
+
+organization := "com.github.mdr"
 
 version := "1.0"
 
-scalaVersion := "2.9.0"
+scalaVersion := "2.9.1"
 
-libraryDependencies += "org.scala-tools.testing" % "scalacheck_2.9.0" % "1.9" % "test"
+libraryDependencies += "org.scala-tools.testing" %% "scalacheck" % "1.9" % "test"
 
-retrieveManaged := true
+EclipseKeys.withSource := true
+
+EclipseKeys.eclipseOutput := Some("bin")

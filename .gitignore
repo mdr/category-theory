@@ -4,3 +4,4 @@ bin/
 lib_managed/
 target/
 project/
+.cache

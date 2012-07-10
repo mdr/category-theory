@@ -1,4 +1,4 @@
-package com.github.mdr.categorytheory
+package com.github.mdr.categoryTheory
 
 import com.github.mdr.categoryTheory._
 import com.github.mdr.categoryTheory.Categories._
@@ -119,5 +119,5 @@ object SetCategoryGenerators {
     f ← arbitraryMorphism(o1, o2)
     g ← arbitraryMorphism(o1, o2)
   } yield (f, g)
-  
+
 }

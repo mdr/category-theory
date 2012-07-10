@@ -1,4 +1,4 @@
-package com.github.mdr.categorytheory
+package com.github.mdr.categoryTheory
 
 import com.github.mdr.categoryTheory._
 import com.github.mdr.categoryTheory.Categories._
@@ -12,19 +12,19 @@ object GraphCategorySpecification extends Properties("Category of simple directe
   implicit val category = AnyGraphCategory
   import GraphCategoryGenerators._
 
-//  property("left identity") = forAll { (f: Morphism) ⇒
-//    cod(f).id ∘ f == f
-//  }
-//
-//  property("right identity") = forAll { (f: Morphism) ⇒
-//    f ∘ dom(f).id == f
-//  }
-//
-//  property("associativity") = forAll { (morphisms: ThreeComposableMorphisms) ⇒
-//    val ThreeComposableMorphisms(f, g, h) = morphisms
-//    require { cod(h) == dom(g) && cod(g) == dom(f) }
-//    (f ∘ g) ∘ h == f ∘ (g ∘ h)
-//  }
+  //  property("left identity") = forAll { (f: Morphism) ⇒
+  //    cod(f).id ∘ f == f
+  //  }
+  //
+  //  property("right identity") = forAll { (f: Morphism) ⇒
+  //    f ∘ dom(f).id == f
+  //  }
+  //
+  //  property("associativity") = forAll { (morphisms: ThreeComposableMorphisms) ⇒
+  //    val ThreeComposableMorphisms(f, g, h) = morphisms
+  //    require { cod(h) == dom(g) && cod(g) == dom(f) }
+  //    (f ∘ g) ∘ h == f ∘ (g ∘ h)
+  //  }
 
   property("initial objects") = forAll { (o: Object) ⇒
     val u = category.getMorphismFromInitialObject(o)
@@ -36,25 +36,25 @@ object GraphCategorySpecification extends Properties("Category of simple directe
     cod(u) == category.terminalObject && dom(u) == o
   }
 
-//  property("products") = forAll(productTestCases) {
-//    case (f: Morphism, g: Morphism) ⇒
-//      val Product(π1, p, π2) = cod(f) × cod(g)
-//      val u = category.getMediatingMorphismForProduct(f, g)
-//      π1 ∘ u == f && π2 ∘ u == g
-//  }
-//
-//  property("coproducts") = forAll(coproductTestCases) {
-//    case (f: Morphism, g: Morphism) ⇒
-//      val Coproduct(i1, c, i2) = dom(f) ⊕ dom(g)
-//      val u = category.getMediatingMorphismForCoproduct(f, g)
-//      u ∘ i1 == f && u ∘ i2 == g
-//  }
-//
-//  property("equalizers") = forAll(equalizerTestCases) {
-//    case (f: Morphism, g: Morphism) ⇒
-//      val e = category.equalizer(f, g)
-//      f ∘ e == g ∘ e
-//  }
+  //  property("products") = forAll(productTestCases) {
+  //    case (f: Morphism, g: Morphism) ⇒
+  //      val Product(π1, p, π2) = cod(f) × cod(g)
+  //      val u = category.getMediatingMorphismForProduct(f, g)
+  //      π1 ∘ u == f && π2 ∘ u == g
+  //  }
+  //
+  //  property("coproducts") = forAll(coproductTestCases) {
+  //    case (f: Morphism, g: Morphism) ⇒
+  //      val Coproduct(i1, c, i2) = dom(f) ⊕ dom(g)
+  //      val u = category.getMediatingMorphismForCoproduct(f, g)
+  //      u ∘ i1 == f && u ∘ i2 == g
+  //  }
+  //
+  //  property("equalizers") = forAll(equalizerTestCases) {
+  //    case (f: Morphism, g: Morphism) ⇒
+  //      val e = category.equalizer(f, g)
+  //      f ∘ e == g ∘ e
+  //  }
 
 }
 
@@ -91,7 +91,7 @@ object GraphCategoryGenerators {
       f ← arbitraryMorphism(dom, cod)
     } yield f
   }
-    
+
   case class ThreeComposableMorphisms(f: Morphism, g: Morphism, h: Morphism) {
     require { cod(h) == dom(g) && cod(g) == dom(f) }
   }
@@ -130,5 +130,5 @@ object GraphCategoryGenerators {
     f ← arbitraryMorphism(o1, o2)
     g ← arbitraryMorphism(o1, o2)
   } yield (f, g)
-  
+
 }
