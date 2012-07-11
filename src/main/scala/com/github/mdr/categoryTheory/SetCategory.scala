@@ -5,7 +5,7 @@ import scala.collection.IterableLike
 import scala.collection.generic.CanBuildFrom
 import scala.collection.mutable.Builder
 import scala.collection.mutable.ArrayBuffer
-import scala.PartialFunction.cond
+import scala.PartialFunction._
 
 object AnySetCategory
     extends SetCategory[Any](1)
@@ -20,10 +20,9 @@ object AnySetCategory
   }
 
   def getMediatingMorphismForProduct(f: TypedFn[Any], g: TypedFn[Any]): TypedFn[Any] = {
-    require(f.domain == g.domain)
-    val a = f.domain
+    val a = dom(f).ensuring(_ == dom(g))
     val Product(π1, p, π2) = cod(f) × cod(g)
-    val u = TypedFn(f.domain, p) { x ⇒ (f(x), g(x)) }
+    val u = TypedFn(a, p) { x ⇒ (f(x), g(x)) }
     require(π1 ∘ u == f)
     require(π2 ∘ u == g)
     u
@@ -36,8 +35,7 @@ object AnySetCategory
   }
 
   def getMediatingMorphismForCoproduct(f: TypedFn[Any], g: TypedFn[Any]): TypedFn[Any] = {
-    require(f.codomain == g.codomain)
-    val a = f.codomain
+    val a = cod(f).ensuring(_ == cod(g))
     val Coproduct(i1, c, i2) = dom(f) ⊕ dom(g)
     val u = TypedFn(c, a) {
       case Left(x)  ⇒ f(x)
